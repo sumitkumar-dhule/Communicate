@@ -1,4 +1,4 @@
-package com.example.communicate
+package com.example.communicate.util
 
 import android.content.ContentResolver
 import android.content.Context
