@@ -59,7 +59,7 @@ class MainViewModel @Inject constructor(private val getARandomStringUsecase: Get
 
                 _uiState.update {
                     it.copy(
-                        stringList = mutableList.toList(),
+                        stringList = mutableList.reversed().toList(),
                         isLoading = false
                     )
 
