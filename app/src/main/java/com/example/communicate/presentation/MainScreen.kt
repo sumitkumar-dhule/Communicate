@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.communicate.domain.model.RandomString
 import kotlinx.coroutines.flow.Flow
@@ -40,7 +41,7 @@ fun MainScreen(
     Column(modifier = Modifier.fillMaxWidth()) {
         RequestData(onEvent)
 
-        RandomStringItem(uiState.aRandomSting)
+        StringItemList(uiState.stringList)
 
         History()
     }
@@ -81,12 +82,17 @@ fun RandomStringItem(randomString: RandomString) {
             text = randomString.length.toString(),
             modifier = Modifier
                 .width(30.dp)
-                .padding(horizontal = 4.dp)
+                .padding(horizontal = 4.dp),
+            textAlign = TextAlign.Center
         )
         VerticalDivider(modifier = Modifier.height(16.dp))
-        Text(text = randomString.created, modifier = Modifier
-            .width(200.dp)
-            .padding(4.dp))
+        Text(
+            text = randomString.created, modifier = Modifier
+                .width(200.dp)
+                .padding(4.dp),
+            textAlign = TextAlign.End
+
+        )
     }
 }
 

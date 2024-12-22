@@ -18,9 +18,10 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(private val getARandomStringUsecase: GetARandomStringUsecase) :
     ViewModel() {
 
-    private val _uiState =
-        MutableStateFlow(MainState(RandomString(value = "", length = 0, created = "")))
+    private val _uiState = MutableStateFlow(MainState())
     private val _uiEventChannel = Channel<MainUiEvent>(Channel.BUFFERED)
+
+    private val mutableList = mutableListOf<RandomString>()
 
     val uiState = _uiState.asStateFlow()
     val uiEventFlow = _uiEventChannel.receiveAsFlow()
@@ -43,18 +44,22 @@ class MainViewModel @Inject constructor(private val getARandomStringUsecase: Get
     }
 
     private fun getNewRandomString(length: String) {
-        _uiState.update {
-            it.copy(
-                isLoading = true
-            )
-        }
 
         viewModelScope.launch {
             try {
-                val randString = async { getARandomStringUsecase(length.toInt()) }
                 _uiState.update {
                     it.copy(
-                        aRandomSting = randString.await(),
+                        isLoading = true
+                    )
+                }
+
+                val randString = async { getARandomStringUsecase(length.toInt()) }.await()
+
+                mutableList.add(randString)
+
+                _uiState.update {
+                    it.copy(
+                        stringList = mutableList.toList(),
                         isLoading = false
                     )
 
