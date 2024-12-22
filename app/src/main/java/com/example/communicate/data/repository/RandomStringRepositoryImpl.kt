@@ -9,15 +9,23 @@ import javax.inject.Inject
 class RandomStringRepositoryImpl @Inject constructor(
     private val contentResolver: RandomStringContentResolver,
     private val mapper: RandomStringMapper): RandomStringRepository {
-    override suspend fun getNewRandomString(): RandomString {
-     return  mapper.map(contentResolver.getStringFromProvider(6))
+    override suspend fun getNewRandomString(length: Int): RandomString {
+     return  mapper.map(contentResolver.getStringFromProvider(length))
     }
 
     override suspend fun saveNewRandomString(save: RandomString) {
         TODO("Not yet implemented")
     }
 
+    override suspend fun removeString(save: RandomString) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun getAllRandomString(): List<RandomString> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun clearAll() {
         TODO("Not yet implemented")
     }
 }
