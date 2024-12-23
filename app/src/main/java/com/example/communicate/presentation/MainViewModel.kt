@@ -34,6 +34,7 @@ class MainViewModel @Inject constructor(private val getARandomStringUsecase: Get
     fun onEvent(event: MainEvent) {
         when (event) {
             is MainEvent.GetNewString -> {
+                loading()
                 getNewRandomString(event.length)
             }
 
@@ -52,6 +53,36 @@ class MainViewModel @Inject constructor(private val getARandomStringUsecase: Get
         updateList()
     }
 
+
+    private fun getNewRandomString(length: String) {
+        viewModelScope.launch {
+            try {
+                when (val result = getARandomStringUsecase(length.toInt())) {
+                    is Result.Error -> {
+                        updateError("Something went wrong. try again")
+                    }
+
+                    is Result.Success -> {
+                        mutableList.add(result.data)
+                        updateList()
+                    }
+                }
+
+
+            } catch (exception: Exception) {
+                updateError("Something went wrong. try again")
+            }
+        }
+    }
+
+    private fun loading() {
+        _uiState.update {
+            it.copy(
+                isLoading = true
+            )
+        }
+    }
+
     private fun updateList() {
         _uiState.update {
             it.copy(
@@ -62,46 +93,14 @@ class MainViewModel @Inject constructor(private val getARandomStringUsecase: Get
         }
     }
 
-    private fun getNewRandomString(length: String) {
+    private fun updateError(errorMessage: String) {
         _uiState.update {
             it.copy(
-                isLoading = true
+                isLoading = false,
+                isError = true,
+                stringList = mutableList.toList(),
+                errorMessage = errorMessage
             )
-        }
-
-        viewModelScope.launch {
-            try {
-                when (val result = getARandomStringUsecase(length.toInt())) {
-                    is Result.Error -> {
-
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = true
-                            )
-                        }
-
-                    }
-
-                    is Result.Success -> {
-                        mutableList.add(result.data)
-
-                        _uiState.update {
-                            it.copy(
-                                stringList = mutableList.reversed().toList(),
-                                isLoading = false,
-                                isError = false,
-                            )
-
-                        }
-
-                    }
-                }
-
-
-            } catch (exception: Exception) {
-
-            }
         }
     }
 
