@@ -6,6 +6,7 @@ import com.example.communicate.domain.model.RandomString
 import com.example.communicate.domain.usecase.GetARandomStringUsecase
 import com.example.communicate.util.DataError
 import com.example.communicate.util.Result
+import com.example.communicate.util.ValidationError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.Channel
@@ -38,7 +39,25 @@ class MainViewModel @Inject constructor(private val getARandomStringUsecase: Get
         when (event) {
             is MainEvent.GetNewString -> {
                 loading()
-                getNewRandomString(event.length)
+
+                when (val lengthResult = isInvalidStringLength(event.length)) {
+                    is Result.Error -> when (lengthResult.error) {
+                        ValidationError.StringLength.ZERO ->
+                            updateError("Please enter value greater than zero")
+
+                        ValidationError.StringLength.NEGATIVE ->
+                            updateError("Can not generate string with negative length")
+
+                        ValidationError.StringLength.PARSEING ->
+                            updateError("Enter valid string length")
+                    }
+
+                    is Result.Success -> {
+                        getNewRandomString(lengthResult.data)
+                    }
+                }
+
+
             }
 
             is MainEvent.Remove -> remove(event.id)
@@ -56,11 +75,11 @@ class MainViewModel @Inject constructor(private val getARandomStringUsecase: Get
         updateList(mutableList.toList())
     }
 
-    private fun getNewRandomString(length: String) {
+    private fun getNewRandomString(length: Int) {
         viewModelScope.launch {
             try {
                 withTimeout(5000) {
-                    when (val result = getARandomStringUsecase(length.toInt())) {
+                    when (val result = getARandomStringUsecase(length)) {
                         is Result.Error -> {
                             when (result.error) {
                                 DataError.Local.NO_PROVIDER ->
@@ -88,6 +107,25 @@ class MainViewModel @Inject constructor(private val getARandomStringUsecase: Get
                 updateError("Something went wrong. try again")
             }
         }
+    }
+
+    private fun isInvalidStringLength(length: String): Result<Int, ValidationError> {
+        var validLength = 0
+        try {
+            validLength = length.toInt()
+        } catch (exception: Exception) {
+            return Result.Error(ValidationError.StringLength.PARSEING)
+        }
+
+        if (validLength == 0) {
+            return Result.Error(ValidationError.StringLength.ZERO)
+        }
+
+        if (validLength < 0) {
+            return Result.Error(ValidationError.StringLength.NEGATIVE)
+        }
+
+        return Result.Success(validLength)
     }
 
     private fun loading() {
