@@ -10,7 +10,7 @@ class RandomStringRepositoryImpl @Inject constructor(
     private val contentResolver: RandomStringContentResolver,
     private val mapper: RandomStringMapper): RandomStringRepository {
     override suspend fun getNewRandomString(length: Int): RandomString {
-     return  mapper.map(contentResolver.getStringFromProvider(length))
+     return  mapper.map(contentResolver.getResponseFromProvider(length))
     }
 
     override suspend fun saveNewRandomString(save: RandomString) {

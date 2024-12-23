@@ -8,9 +8,9 @@ import javax.inject.Inject
 
 class RandomStringContentResolver @Inject constructor(private val applicationContext: Context) {
 
-    fun getStringFromProvider(length:Int): String {
+    fun getResponseFromProvider(length:Int): String? {
 
-        var result1: String = ""
+        var jsonResponse: String? = null
         val contentUri = Uri.parse(DATA_URI)
         val projection = arrayOf("data")
 
@@ -23,12 +23,12 @@ class RandomStringContentResolver @Inject constructor(private val applicationCon
             val dataCol = cursor.getColumnIndex("data")
 
             while (cursor.moveToNext()) {
-                result1 = cursor.getString(dataCol)
+                jsonResponse = cursor.getString(dataCol)
             }
 
             cursor.close()
         }
-        return result1
+        return jsonResponse
     }
 
 

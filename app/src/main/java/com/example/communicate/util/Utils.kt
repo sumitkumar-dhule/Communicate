@@ -5,7 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 
-fun getStringFromProvider(context: Context, length:Int): String {
+fun getResponseFromProvider(context: Context, length:Int): String {
     var result1: String = ""
     val contentUri = Uri.parse(DATA_URI)
     val projection = arrayOf("data")
