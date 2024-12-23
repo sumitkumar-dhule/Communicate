@@ -37,13 +37,22 @@ class MainViewModel @Inject constructor(private val getARandomStringUsecase: Get
                 getNewRandomString(event.length)
             }
 
-            is MainEvent.RemoveString -> TODO()
+            is MainEvent.Remove -> remove(event.id)
             is MainEvent.ResetAll -> resetList()
         }
     }
 
+    private fun remove(tag: String) {
+        mutableList.removeAll { it.created == tag }
+        updateList()
+    }
+
     private fun resetList() {
         mutableList.clear()
+        updateList()
+    }
+
+    private fun updateList() {
         _uiState.update {
             it.copy(
                 isLoading = false,

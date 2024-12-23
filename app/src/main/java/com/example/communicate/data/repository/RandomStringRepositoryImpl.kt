@@ -6,7 +6,6 @@ import com.example.communicate.domain.repository.RandomStringRepository
 import com.example.communicate.util.DataError
 import com.example.communicate.util.RandomStringContentResolver
 import com.example.communicate.util.Result
-import com.example.communicate.util.asEmptyDataResult
 import javax.inject.Inject
 
 class RandomStringRepositoryImpl @Inject constructor(
@@ -19,6 +18,8 @@ class RandomStringRepositoryImpl @Inject constructor(
             is Result.Success -> Result.Success(mapper.map(result.data))
         }
     }
+
+    //TODO:: Will use following API get/update data from/to Room DB
 
     override suspend fun saveNewRandomString(save: RandomString) {
         TODO("Not yet implemented")
