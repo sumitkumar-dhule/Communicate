@@ -3,7 +3,6 @@ package com.example.communicate.presentation
 import androidx.compose.runtime.Immutable
 import com.example.communicate.domain.model.RandomString
 
-@Immutable
 data class MainState(
     val stringList: List<RandomString> = listOf(),
     val isLoading: Boolean = false,

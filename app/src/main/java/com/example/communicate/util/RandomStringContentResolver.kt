@@ -8,28 +8,35 @@ import javax.inject.Inject
 
 class RandomStringContentResolver @Inject constructor(private val applicationContext: Context) {
 
-    fun getResponseFromProvider(length:Int): String? {
-
-        var jsonResponse: String? = null
+    fun getResponseFromProvider(length: Int): Result<String, DataError.Local> {
+        var jsonResponse = ""
         val contentUri = Uri.parse(DATA_URI)
         val projection = arrayOf("data")
 
-        applicationContext.contentResolver.query(
-            contentUri,
-            projection,
-            Bundle().apply { putInt(ContentResolver.QUERY_ARG_LIMIT, length) },
-            null
-        )?.use { cursor ->
-            val dataCol = cursor.getColumnIndex("data")
+        try {
+            applicationContext.contentResolver.query(
+                contentUri,
+                projection,
+                Bundle().apply { putInt(ContentResolver.QUERY_ARG_LIMIT, length) },
+                null
+            )?.use { cursor ->
+                val dataCol = cursor.getColumnIndex("data")
 
-            while (cursor.moveToNext()) {
-                jsonResponse = cursor.getString(dataCol)
+                while (cursor.moveToNext()) {
+                    jsonResponse = cursor.getString(dataCol)
+                }
+
+                cursor.close()
             }
 
-            cursor.close()
+            return if (jsonResponse.isEmpty()) {
+                Result.Error(error = DataError.Local.INVALID_DATA)
+            } else {
+                Result.Success(data = jsonResponse)
+            }
+
+        } catch (exception: Exception) {
+            return Result.Error(error = DataError.Local.UNKNOWN)
         }
-        return jsonResponse
     }
-
-
 }

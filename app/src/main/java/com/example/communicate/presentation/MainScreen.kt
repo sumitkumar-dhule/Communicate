@@ -1,5 +1,6 @@
 package com.example.communicate.presentation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,21 +36,25 @@ fun MainScreen(
     onEvent: (MainEvent) -> Unit,
     uiEventChannel: Flow<MainUiEvent>
 ) {
-
     Column(modifier = Modifier.fillMaxWidth()) {
         RequestData(onEvent)
 
-        StringItemList(uiState.stringList)
+        //TODO: Fix loading
+        if (uiState.isLoading) {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
 
-        History()
-    }
+        if (uiState.isError) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("Something went wrong")
+            }
+        } else {
+            StringItemList(uiState.stringList)
 
-    if (uiState.isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
         }
     }
-
 }
 
 @Composable
@@ -113,7 +119,3 @@ fun RequestData(onEvent: (MainEvent) -> Unit) {
     }
 }
 
-@Composable
-fun History() {
-
-}
