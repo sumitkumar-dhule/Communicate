@@ -27,7 +27,7 @@ class RandomStringContentResolver @Inject constructor(private val applicationCon
                 }
 
                 cursor.close()
-            }
+            }?: return Result.Error(error = DataError.Local.NO_PROVIDER)
 
             return if (jsonResponse.isEmpty()) {
                 Result.Error(error = DataError.Local.INVALID_DATA)
