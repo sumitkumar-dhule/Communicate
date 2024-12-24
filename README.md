@@ -32,16 +32,16 @@ The project follows a modular architecture and is structured into the following 
 
 The following requirements are covered in this implementation:  
 
-- **IAV-1**: The user can set the length of the string to be generated.  
-- **IAV-2**: The app queries the content provider for a random string with the specified length upon user interaction.  
-- **IAV-3**: Displays every generated string, including:  
+- **AC-1**: The user can set the length of the string to be generated.  
+- **AC-2**: The app queries the content provider for a random string with the specified length upon user interaction.  
+- **AC-3**: Displays every generated string, including:  
   - The generated string  
   - The specified length of the string  
   - The time and date of creation  
-- **IAV-4**: Older strings remain visible to the user when a new string is generated.  
-- **IAV-5**: Users can delete all generated strings from the app.  
-- **IAV-6**: Users can delete a single generated string from the app.  
-- **IAV-7**: Error handling ensures a robust user experience.  
+- **AC-4**: Older strings remain visible to the user when a new string is generated.  
+- **AC-5**: Users can delete all generated strings from the app.  
+- **AC-6**: Users can delete a single generated string from the app.  
+- **AC-7**: Error handling ensures a robust user experience.  
 
 ---
 
