@@ -81,13 +81,10 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.dagger.hilt.android.compiler)
 
-    val room_version = "2.6.1"
-
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.room.compiler)
 
-    //ksp(libs.androidx.room.compiler)
 
 }
 
