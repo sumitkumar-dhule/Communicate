@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("androidx.room")
 }
 
 android {
@@ -49,6 +50,10 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
 }
 
 dependencies {
@@ -74,6 +79,12 @@ dependencies {
 
     implementation(libs.hilt.android)
     kapt(libs.dagger.hilt.android.compiler)
+
+    val room_version = "2.6.1"
+
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+
 }
 
 // Allow references to generated code

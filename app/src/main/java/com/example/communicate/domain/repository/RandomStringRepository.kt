@@ -6,8 +6,8 @@ import com.example.communicate.util.Result
 
 interface RandomStringRepository {
     suspend fun getNewRandomString(length: Int): Result<RandomString, DataError.Local>
-    suspend fun saveNewRandomString(save: RandomString)
-    suspend fun removeString(save: RandomString)
+    suspend fun saveNewRandomString(randomString: RandomString)
+    suspend fun removeString(randomString: RandomString)
     suspend fun getAllRandomString(): List<RandomString>
     suspend fun clearAll()
 }
