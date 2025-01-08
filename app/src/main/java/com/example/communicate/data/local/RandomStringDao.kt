@@ -8,7 +8,7 @@ interface RandomStringDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(randomString: RandomStringEntity)
 
-    @Query("SELECT * FROM random_string_table")
+    @Query("SELECT * FROM random_string_table ORDER BY created DESC")
     suspend fun getAllRandomStrings(): List<RandomStringEntity>
 
     @Query("DELETE FROM random_string_table WHERE id = :id")

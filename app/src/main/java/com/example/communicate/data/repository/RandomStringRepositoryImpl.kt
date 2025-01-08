@@ -6,8 +6,11 @@ import com.example.communicate.data.mapper.RandomStringMapper
 import com.example.communicate.domain.model.RandomString
 import com.example.communicate.domain.repository.RandomStringRepository
 import com.example.communicate.util.DataError
+import com.example.communicate.util.EmptyResult
 import com.example.communicate.util.RandomStringContentResolver
 import com.example.communicate.util.Result
+import com.example.communicate.util.Result.Error
+import com.example.communicate.util.Result.Success
 import javax.inject.Inject
 
 class RandomStringRepositoryImpl @Inject constructor(
@@ -15,14 +18,17 @@ class RandomStringRepositoryImpl @Inject constructor(
     private val dao: RandomStringDao,
     private val mapper: RandomStringMapper
 ) : RandomStringRepository {
-    override suspend fun getNewRandomString(length: Int): Result<RandomString, DataError.Local> {
+    override suspend fun getNewRandomString(length: Int): Result<Unit, DataError.Local> {
         return when (val result = contentResolver.getResponseFromProvider(length)) {
-            is Result.Error -> Result.Error(result.error)
-            is Result.Success -> Result.Success(mapper.map(result.data)) //add to db // retun success Empty
+            is Error -> Error(result.error)
+            is Success -> {
+                insertStringToDatabase(mapper.map(result.data))
+                return Success(Unit)
+            }
         }
     }
 
-    override suspend fun saveNewRandomString(randomString: RandomString) {
+    private suspend fun insertStringToDatabase(randomString: RandomString) {
         dao.insert(
             RandomStringEntity(
                 value = randomString.value,
@@ -32,18 +38,30 @@ class RandomStringRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun removeString(randomString: RandomString) {
-        dao.deleteSpecificStringById(randomString.id)
+    override suspend fun removeString(id: Int): Result<Unit, DataError.Local> {
+        try {
+            dao.deleteSpecificStringById(id)
+            return Success(Unit)
+        } catch (exception: Exception) {
+            return Error(error = DataError.Local.DATABASE_ERROR)
+        }
     }
 
-    override suspend fun getAllRandomString(): List<RandomString> {
-        return dao.getAllRandomStrings().map {
-            RandomString(
-                id = it.id,
-                value = it.value,
-                length = it.length,
-                created = it.created
-            )
+    override suspend fun getAllRandomString(): Result<List<RandomString>, DataError.Local> {
+
+        try {
+            val string = dao.getAllRandomStrings().map {
+                RandomString(
+                    id = it.id,
+                    value = it.value,
+                    length = it.length,
+                    created = it.created
+                )
+            }
+
+            return Success(data = string)
+        } catch (exception: Exception) {
+            return Error(error = DataError.Local.DATABASE_ERROR)
         }
     }
 

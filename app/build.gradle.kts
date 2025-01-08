@@ -4,6 +4,7 @@ plugins {
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     id("androidx.room")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -84,6 +85,9 @@ dependencies {
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
+
+    //ksp(libs.androidx.room.compiler)
 
 }
 

@@ -5,9 +5,8 @@ import com.example.communicate.util.DataError
 import com.example.communicate.util.Result
 
 interface RandomStringRepository {
-    suspend fun getNewRandomString(length: Int): Result<RandomString, DataError.Local>
-    suspend fun saveNewRandomString(randomString: RandomString)
-    suspend fun removeString(randomString: RandomString)
-    suspend fun getAllRandomString(): List<RandomString>
+    suspend fun getNewRandomString(length: Int): Result<Unit, DataError.Local>
+    suspend fun removeString(id: Int): Result<Unit, DataError.Local>
+    suspend fun getAllRandomString(): Result<List<RandomString>, DataError.Local>
     suspend fun clearAll()
 }
