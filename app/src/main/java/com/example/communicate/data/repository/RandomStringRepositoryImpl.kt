@@ -6,7 +6,6 @@ import com.example.communicate.data.mapper.RandomStringMapper
 import com.example.communicate.domain.model.RandomString
 import com.example.communicate.domain.repository.RandomStringRepository
 import com.example.communicate.util.DataError
-import com.example.communicate.util.EmptyResult
 import com.example.communicate.util.RandomStringContentResolver
 import com.example.communicate.util.Result
 import com.example.communicate.util.Result.Error
@@ -48,7 +47,6 @@ class RandomStringRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getAllRandomString(): Result<List<RandomString>, DataError.Local> {
-
         try {
             val string = dao.getAllRandomStrings().map {
                 RandomString(
