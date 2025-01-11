@@ -1,6 +1,8 @@
 package com.example.communicate.di
 
 import android.content.Context
+import com.example.communicate.data.local.DatabaseInstance
+import com.example.communicate.data.local.RandomStringDao
 import com.example.communicate.data.mapper.RandomStringMapper
 import com.example.communicate.data.repository.RandomStringRepositoryImpl
 import com.example.communicate.domain.repository.RandomStringRepository
@@ -24,10 +26,20 @@ object DiModule {
         RandomStringContentResolver(appContext)
 
     @Provides
+    @Singleton
+    internal fun provideDao(
+        @ApplicationContext appContext: Context
+    ): RandomStringDao = DatabaseInstance.getDatabase(appContext).randomStringDao()
+
+
+    @Provides
     fun provideRepo(
         randomStringContentResolver: RandomStringContentResolver,
-        mapper: RandomStringMapper
+        mapper: RandomStringMapper,
+        dao: RandomStringDao
     ): RandomStringRepository =
-        RandomStringRepositoryImpl(randomStringContentResolver, mapper)
+        RandomStringRepositoryImpl(randomStringContentResolver, dao, mapper)
+
+
 
 }

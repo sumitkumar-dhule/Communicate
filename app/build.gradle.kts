@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("androidx.room")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -49,6 +51,10 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
 }
 
 dependencies {
@@ -74,6 +80,17 @@ dependencies {
 
     implementation(libs.hilt.android)
     kapt(libs.dagger.hilt.android.compiler)
+
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
+
+    testImplementation(libs.mockk.android)
+    testImplementation(libs.mockk.agent)
+    testImplementation(libs.strikt.core)
+    testImplementation (libs.kotlinx.coroutines.test)
+
+
 }
 
 // Allow references to generated code

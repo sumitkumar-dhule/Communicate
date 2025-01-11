@@ -3,7 +3,11 @@ package com.example.communicate.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.communicate.domain.model.RandomString
+import com.example.communicate.domain.usecase.ClearAllUsecase
 import com.example.communicate.domain.usecase.GetARandomStringUsecase
+import com.example.communicate.domain.usecase.GetAllRandomStringsUsecase
+import com.example.communicate.domain.usecase.RemoveStringlUsecase
+import com.example.communicate.presentation.util.isInvalidStringLength
 import com.example.communicate.util.DataError
 import com.example.communicate.util.Result
 import com.example.communicate.util.ValidationError
@@ -19,12 +23,16 @@ import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val getARandomStringUsecase: GetARandomStringUsecase) :
-    ViewModel() {
+class MainViewModel @Inject constructor(
+    private val getARandomStringUsecase: GetARandomStringUsecase,
+    private val getAllRandomStringsUsecase: GetAllRandomStringsUsecase,
+    private val removeStringlUsecase: RemoveStringlUsecase,
+    private val clearAllUsecase: ClearAllUsecase
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainState())
     private val _uiEventChannel = Channel<MainUiEvent>(Channel.BUFFERED)
-    private val mutableList = mutableListOf<RandomString>()
+    private var mutableList = mutableListOf<RandomString>()
 
     val uiState = _uiState.asStateFlow()
     val uiEventFlow = _uiEventChannel.receiveAsFlow()
@@ -33,6 +41,10 @@ class MainViewModel @Inject constructor(private val getARandomStringUsecase: Get
         viewModelScope.launch {
             _uiEventChannel.send(uiEvent)
         }
+    }
+
+    init {
+        updateFromDb()
     }
 
     fun onEvent(event: MainEvent) {
@@ -56,23 +68,21 @@ class MainViewModel @Inject constructor(private val getARandomStringUsecase: Get
                         getNewRandomString(lengthResult.data)
                     }
                 }
-
-
             }
 
             is MainEvent.Remove -> remove(event.id)
-            is MainEvent.ResetAll -> resetList()
+            is MainEvent.ResetAll -> viewModelScope.launch { clearAllUsecase() }
         }
     }
 
-    private fun remove(tag: String) {
-        mutableList.removeAll { it.created == tag }
-        updateList(mutableList.toList())
-    }
-
-    private fun resetList() {
-        mutableList.clear()
-        updateList(mutableList.toList())
+    private fun remove(tag: Int) {
+        viewModelScope.launch {
+            when (val result = removeStringlUsecase(tag)) {
+                is Result.Error -> updateError("Something went wrong. try again")
+                is Result.Success -> Unit
+            }
+            updateFromDb()
+        }
     }
 
     private fun getNewRandomString(length: Int) {
@@ -95,8 +105,7 @@ class MainViewModel @Inject constructor(private val getARandomStringUsecase: Get
                         }
 
                         is Result.Success -> {
-                            mutableList.add(result.data)
-                            updateList(mutableList.reversed().toList())
+                            updateFromDb()
                         }
                     }
                 }
@@ -109,24 +118,29 @@ class MainViewModel @Inject constructor(private val getARandomStringUsecase: Get
         }
     }
 
-    private fun isInvalidStringLength(length: String): Result<Int, ValidationError> {
-        var validLength = 0
-        try {
-            validLength = length.toInt()
-        } catch (exception: Exception) {
-            return Result.Error(ValidationError.StringLength.PARSEING)
-        }
+    private fun updateFromDb() {
+        viewModelScope.launch {
+            try {
 
-        if (validLength == 0) {
-            return Result.Error(ValidationError.StringLength.ZERO)
-        }
+                when (val result = getAllRandomStringsUsecase()) {
+                    is Result.Error -> {
+                        updateError("Something went wrong. try again")
+                    }
 
-        if (validLength < 0) {
-            return Result.Error(ValidationError.StringLength.NEGATIVE)
-        }
+                    is Result.Success -> {
+                        mutableList = result.data.toMutableList()
+                        updateList(mutableList.toList())
+                    }
 
-        return Result.Success(validLength)
+                }
+            } catch (exception: TimeoutCancellationException) {
+                updateError("Taking too long...timeout. Try again")
+            } catch (exception: Exception) {
+                updateError("Something went wrong. try again")
+            }
+        }
     }
+
 
     private fun loading() {
         _uiState.update {
@@ -156,5 +170,4 @@ class MainViewModel @Inject constructor(private val getARandomStringUsecase: Get
             )
         }
     }
-
 }

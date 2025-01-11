@@ -126,7 +126,7 @@ fun RandomStringItem(randomString: RandomString, onEvent: (MainEvent) -> Unit) {
 
         IconButton(
             modifier = Modifier.size(60.dp),
-            onClick = { onEvent(MainEvent.Remove(randomString.created)) }
+            onClick = { onEvent(MainEvent.Remove(randomString.id)) }
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_delete_outline),

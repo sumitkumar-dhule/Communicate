@@ -6,6 +6,7 @@ sealed interface DataError: Error {
         REQUEST_TIMEOUT,
         DISK_FULL,
         NO_PROVIDER,
+        DATABASE_ERROR,
         INVALID_DATA,
         UNKNOWN
     }
