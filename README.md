@@ -12,7 +12,9 @@ The application includes the following key features and technologies:
 - **Kotlin Coroutines**: For asynchronous and non-blocking programming.  
 - **ViewModel**: Lifecycle-aware component for managing UI-related data.  
 - **Jetpack Compose**: Modern UI toolkit for building native Android UIs.  
-- **Dagger Hilt**: Dependency injection library for Android.  
+- **Dagger Hilt**: Dependency injection library for Android.
+- **Room Database**: Local persistence to allow offline access to fetched strings and improve the app's usability.
+- **Junit  and Mockk**: Writing unit tests using **MockK** to mock dependencies and validate logic.  
 
 ---
 
@@ -60,13 +62,6 @@ Upon launching the application:
 
 - The app will display a list of randomly generated strings fetched from the provider app.  
 - Users can interact with the UI to refresh data, view string details, delete strings, and handle errors gracefully.  
-
----
-
-## In Progress  
-
-- **Testing**: Writing unit tests using **MockK** to mock dependencies and validate logic.  
-- **Room Database**: Adding local persistence to allow offline access to fetched strings and improve the app's usability.  
 
 ---
 
